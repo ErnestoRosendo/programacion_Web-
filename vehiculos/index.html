@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <form>
+
+        Placa:<input type="text" id="placa">
+        <br>
+        Marca:<input type="text" id="marca">
+        <br>
+        Modelo:<input type="text" id="modelo">
+        <br>
+        <button type="button" id="btnList">Listar</button>
+        <br>
+        <button type="button" id="btnAdd">Agregar</button>
+        <br>
+        <button type="button" id="btnLoc">Buscar</button>
+        <br>
+        <button type="button" id="btnDel">Eliminar</button>
+
+    </form>
+
+</body>
+<script>
+
+    const btnList=document.getElementById('btnList');
+    btnList.addEventListener('click',()=>{
+        fetch(`http://localhost:3000/vehiculos`)
+        .then((response) => response.json())
+        .then((data) => {
+
+            console.log(data.vehiculos)
+
+        })
+        .catch((error) => console.error('Error:', error));
+    })
+
+    const btnAdd=document.getElementById('btnAdd');
+    btnAdd.addEventListener('click',()=>{
+        
+        const placa = document.getElementById('placa').value;
+        const marca = document.getElementById('marca').value;
+        const modelo = document.getElementById('modelo').value;
+
+        if (!placa || !marca || !modelo) {
+            console.log("No se han ingresado todos los datos");
+            return;
+        }
+
+        fetch(`http://localhost:3000/vehiculos`)
+        .then((response) => response.json())
+        .then((data) => {
+            const existeIndex = data.vehiculos.findIndex((carro) => carro.placa === parseInt(placa));
+            if (existeIndex !== -1) {
+                console.log("El carro ya está registrado, ingrese otra placa");
+            } else {
+                fetch(`http://localhost:3000/vehiculos`, {
+                    method: 'POST',
+                    body: JSON.stringify ({
+                        placa: parseInt(placa),
+                        marca: marca,
+                        modelo: modelo
+                    }),
+                    headers: {
+                        'Content-type' :'application/json; charset=UTF-8'
+                    }
+                });
+            }
+        })
+    })
+
+    const btnLoc = document.getElementById('btnLoc');
+    btnLoc.addEventListener('click', () => {
+    const placa = document.getElementById('placa').value;
+
+        if (!placa) {
+            console.log("No se ha ingresado ninguna placa");
+            return;
+        }
+
+        fetch(`http://localhost:3000/vehiculos/${placa}`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.tipo === "busqueda" && data.pos !== -1) {
+                console.log(`El carro con la placa ${placa} está registrado`);
+            } else {
+                console.log("No está registrada la placa");
+            }
+        })
+        .catch((error) => console.error('Error:', error));
+    });
+
+    const btnDel = document.getElementById('btnDel');
+    btnDel.addEventListener('click', () => {
+    const placa = document.getElementById('placa').value;
+
+        if (!placa) {
+            console.log("No se ha ingresado ninguna placa");
+            return;
+        }
+
+        fetch(`http://localhost:3000/vehiculos/${placa}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8'
+            }
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.tipo === 'eliminar' && data.pos !== -1) 
+                console.log(`Se ha eliminado el vehículo con la placa ${data.cardel}`);
+            else 
+                console.log("El vehículo no fue encontrado");
+        })
+
+    .catch((error) => console.error('Error:', error));
+});
+
+</script>
+</html>
