@@ -6,5 +6,11 @@ router.get('./', (req,res)=>{
 })
 
 router.get('/:id', (req, res)=>{
-    res.json({id:0, tipo:'todos'})
+    clienteController.buscar(req, res)
 })
+
+router.post('/',(req, res)=>{
+    clienteController.agregar(req, res)
+})
+
+module.exports = router

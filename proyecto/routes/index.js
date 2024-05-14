@@ -1,6 +1,6 @@
 let router = require('express').Router();
 
-let clientes = require('./clientes')
+let clientes = require('./clientes.js')
 router.use('/clientes', clientes)
 
 let numerosr=require('./numeros');
